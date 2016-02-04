@@ -126,9 +126,9 @@ are sung at different tonic pitches so take that into account before comparing p
 
 </div>
 
-<script src="sigma.min.js"></script>
-<script src="sigma.parsers.json.min.js"></script>
-<script src="sigma.parsers.gexf.min.js"></script>
+<script src="resources/sigma.min.js"></script>
+<script src="resources/sigma.parsers.json.min.js"></script>
+<script src="resources/sigma.parsers.gexf.min.js"></script>
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 
 
@@ -180,7 +180,7 @@ are sung at different tonic pitches so take that into account before comparing p
   
   //reading the graph file
    sigma.parsers.json( 
-            'Hindustani.json',
+            '../data/network_files/network_ICASSP2016_10RAGA_2S_11_pattDistance_2s_raga_close_to_sigma_frutcherman_3.json',
             actualGraph,
             function(s) {
       // We first need to save the original colors of our
@@ -236,7 +236,7 @@ are sung at different tonic pitches so take that into account before comparing p
                 $("#title").html("<strong>Title: </strong>"+"<a style='color:white' target='_blank' href="+dbase+'recording/'+data.mbid+ ">"+ data1.title+"</a>");
                 $("#concert").html("<strong>Concert: </strong>"+"<a style='color:white' target='_blank' href="+dbase+'concert/'+data1.concert[0]['mbid']+ ">"+ data1.concert[0]['title']+"</a>");
                 $("#artist").html("<strong>Artist: </strong>"+"<a style='color:white' target='_blank' href="+dbase+'artist/'+data1.album_artists[0]['mbid']+ ">"+ data1.album_artists[0]['name']+"</a>");
-                $("#tonic").html("<strong>Tonic: </strong>"+Math.round(data.tonic)+" Hz <a style='color:white' href='javascript:playtone("+data.tonic+")'"+"><img id='play_pause' src='play.jpg' width='14' height='14' border='0'>");
+                $("#tonic").html("<strong>Tonic: </strong>"+Math.round(data.tonic)+" Hz <a style='color:white' href='javascript:playtone("+data.tonic+")'"+"><img id='play_pause' src='resources/play.jpg' width='14' height='14' border='0'>");
                 $("#start-time").html("<strong>Start-time: </strong>" + Math.round(data.start) + ' s');
                 $("#end-time").html("<strong>End-time: </strong>" + Math.round(data.end)+' s');
                 $("#node").html("<strong>Node Id: </strong>" + e.data.node.label);
@@ -311,7 +311,7 @@ are sung at different tonic pitches so take that into account before comparing p
 
     function playSegment(mbid, startTime, endTime){
         segmentEnd = endTime;
-        audio.src = './mp3_hindustani/' + mbid + '.mp3';
+        audio.src = '../data/mp3_carnatic/' + mbid + '.mp3';
         
         console.log(audio.src);
 //        audio.currentTime = startTime;
@@ -334,12 +334,12 @@ are sung at different tonic pitches so take that into account before comparing p
         {
         oscillator.stop();
         console.log("Stopping")  ;
-        $("#play_pause").attr('src', 'play.jpg');
+        $("#play_pause").attr('src', 'resources/play.jpg');
         }
         else{
         play_osc(f);
         console.log("Starting")  ;
-        $("#play_pause").attr('src', 'stop.jpg');
+        $("#play_pause").attr('src', 'resources/stop.jpg');
         }
         isplaying = !isplaying; 
     }
