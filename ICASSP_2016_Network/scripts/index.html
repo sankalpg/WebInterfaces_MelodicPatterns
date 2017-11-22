@@ -223,14 +223,14 @@ are sung at different tonic pitches so take that into account before comparing p
         $.ajax({
         crossDomain: true,
         dataType: 'json',
-        url: "http://dunya.compmusic.upf.edu/pattern_network/api/get_phrase_data?nid="+ e.data.node.label + "&format=jsonp&callback?"
+        url: "/pattern_network/api/get_phrase_data?nid="+ e.data.node.label + "&format=jsonp&callback?"
         }).then(function(data) {
             playSegment(e.data.node.label, data.start, data.end);
             document.body.style.cursor = "progress";
             $.ajax({
             crossDomain: true,
             dataType: 'json',
-           url: "http://dunya.compmusic.upf.edu/pattern_network/api/get_rec_data?mbid="+ data.mbid + "&format=jsonp&callback?"
+           url: "/pattern_network/api/get_rec_data?mbid="+ data.mbid + "&format=jsonp&callback?"
             }).then(function(data1) {
                 console.log(data1.title);
                 $("#title").html("<strong>Title: </strong>"+"<a style='color:white' target='_blank' href="+dbase+'recording/'+data.mbid+ ">"+ data1.title+"</a>");
@@ -311,7 +311,7 @@ are sung at different tonic pitches so take that into account before comparing p
 
     function playSegment(mbid, startTime, endTime){
         segmentEnd = endTime;
-        audio.src = '../data/mp3_carnatic/' + mbid + '.mp3';
+        audio.src = '/pattern_network/data/mp3_carnatic/' + mbid + '.mp3';
         
         console.log(audio.src);
 //        audio.currentTime = startTime;

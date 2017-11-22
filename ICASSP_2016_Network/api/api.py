@@ -1,25 +1,20 @@
 from __future__ import unicode_literals
-from flask import Flask, request, jsonify, current_app
-import requests
-import psycopg2 as psy
+
 from functools import wraps
-import sys
-import os.path
-import json
-from flask.ext.cors import CORS
-from compmusic import dunya as dn
+
+import psycopg2 as psy
+import requests
+from flask import Flask, request, jsonify, current_app
+from flask_cors import CORS
 
 auth_token = "31fbb43414dedad8a9e9b4379be1a6c8992849b4"
 
 app = Flask(__name__)
 CORS(app)
 
-con = psy.connect(database='ICASSP2016_10RAGA_2S', user='sankalp') 
+con = psy.connect(database='ICASSP2016_10RAGA_2S', user='sankalp')
 cur = con.cursor()
 
-@app.route('/')
-def index():
-    return "raga phrase demo"
 
 def support_jsonp(f):
     """Wraps JSONified output for JSONP"""
@@ -43,8 +38,9 @@ def get_phrase_data():
     cur.execute(cmd%(nid))
     mbid, raaga, tonic, start, end = cur.fetchone()
     out = {'mbid':mbid, 'ragaid': raaga, 'start':start, 'end':end, 'tonic': tonic}
-    
+
     return jsonify(**out)
+
 
 @app.route('/get_rec_data', methods=['GET', 'POST'])
 @support_jsonp
@@ -57,4 +53,4 @@ def get_rec_data():
 
 if __name__ == '__main__':
     app.config['DEBUG'] = True
-    app.run(host= '0.0.0.0', debug = True)    
+    app.run(host= '0.0.0.0', debug = True)
