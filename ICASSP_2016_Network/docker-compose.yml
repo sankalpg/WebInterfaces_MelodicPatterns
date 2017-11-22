@@ -13,6 +13,9 @@ services:
       - web
   web:
     build: .
+    environment:
+      - PN_AUTH_TOKEN=
+      - PN_DB_URI=
     volumes:
           - webroot:/webroot/
     command: python api.py

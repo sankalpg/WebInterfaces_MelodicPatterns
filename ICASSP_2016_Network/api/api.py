@@ -1,19 +1,24 @@
-from __future__ import unicode_literals
-
+import os
 from functools import wraps
 
-import psycopg2 as psy
 import requests
 from flask import Flask, request, jsonify, current_app
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 
-auth_token = "31fbb43414dedad8a9e9b4379be1a6c8992849b4"
+auth_token = os.getenv('PN_AUTH_TOKEN')
+db_connect_str = os.getenv('PN_DB_URI')
+
+if not auth_token or not db_connect_str:
+    raise ValueError('Missing PN_AUTH_TOKEN or PN_DB_CONNECT environment variables for configuration')
+
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = db_connect_str
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 CORS(app)
-
-con = psy.connect(database='ICASSP2016_10RAGA_2S', user='sankalp')
-cur = con.cursor()
+db = SQLAlchemy(app)
 
 
 def support_jsonp(f):
@@ -34,23 +39,33 @@ def support_jsonp(f):
 @support_jsonp
 def get_phrase_data():
     nid = int(request.args.get('nid'))
-    cmd = "select file.mbid, file.raagaid, file.tonic, pattern.start_time, pattern.end_time from pattern join file on (file.id = pattern.file_id) where pattern.id = %d"
-    cur.execute(cmd%(nid))
-    mbid, raaga, tonic, start, end = cur.fetchone()
-    out = {'mbid':mbid, 'ragaid': raaga, 'start':start, 'end':end, 'tonic': tonic}
+    with db.get_engine().begin() as connection:
+        query = text('''
+          SELECT file.mbid
+               , file.raagaid
+               , file.tonic
+               , pattern.start_time as "start"
+               , pattern.end_time as "end"
+            FROM pattern
+            JOIN file
+              ON (file.id = pattern.file_id)
+           WHERE pattern.id = :nid''')
+        result = connection.execute(query, {'nid': nid})
 
-    return jsonify(**out)
+        row = result.fetchone()
+
+    return jsonify(**row)
 
 
 @app.route('/get_rec_data', methods=['GET', 'POST'])
 @support_jsonp
 def get_rec_data():
     mbid = request.args.get('mbid')
-    url = "http://dunya.compmusic.upf.edu/api/carnatic/recording/" + mbid
-    data = requests.get(url, headers = {"Authorization":"Token " + auth_token})
+    url = 'http://dunya.compmusic.upf.edu/api/carnatic/recording/{}'.format(mbid)
+    data = requests.get(url, headers={'Authorization': 'Token {}'.format(auth_token)})
     return jsonify(**(data.json()))
 
 
 if __name__ == '__main__':
     app.config['DEBUG'] = True
-    app.run(host= '0.0.0.0', debug = True)
+    app.run(host='0.0.0.0')
