@@ -9,9 +9,10 @@ from sqlalchemy import text
 
 auth_token = os.getenv('PN_AUTH_TOKEN')
 db_connect_str = os.getenv('PN_DB_URI')
+dunya_host = os.getenv('PN_DUNYA_HOST', 'dunya.compmusic.upf.edu')
 
-if not auth_token or not db_connect_str:
-    raise ValueError('Missing PN_AUTH_TOKEN or PN_DB_CONNECT environment variables for configuration')
+if not auth_token or not db_connect_str or not dunya_host:
+    raise ValueError('Missing PN_AUTH_TOKEN or PN_DB_CONNECT or PN_DUNYA_HOST environment variables for configuration')
 
 
 app = Flask(__name__)
@@ -61,7 +62,7 @@ def get_phrase_data():
 @support_jsonp
 def get_rec_data():
     mbid = request.args.get('mbid')
-    url = 'http://dunya.compmusic.upf.edu/api/carnatic/recording/{}'.format(mbid)
+    url = 'http://{}/api/carnatic/recording/{}'.format(dunya_host, mbid)
     data = requests.get(url, headers={'Authorization': 'Token {}'.format(auth_token)})
     return jsonify(**(data.json()))
 

@@ -16,6 +16,7 @@ services:
     environment:
       - PN_AUTH_TOKEN=
       - PN_DB_URI=
+      - PN_DUNYA_HOST=dunya.compmusic.upf.edu
     volumes:
           - webroot:/webroot/
     command: python api.py
